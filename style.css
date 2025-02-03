@@ -41,7 +41,7 @@ body {
     align-items: center;
 }
 
-.answer {
+.topAnswer {
     position: fixed;
     top: 3%;
     background-color: white;
@@ -139,4 +139,106 @@ body {
 .winner {
     background-color: rgb(45, 45, 45);
     border: none;
+}
+
+.dialog {
+    background-color: rgb(25, 25, 25);
+    border: none;
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: .3rem;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media (max-width: 450px) {
+    .dialog {
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        border: none;
+    }
+}
+
+dialog::backdrop {
+    background: transparent;
+}
+
+.feedback {
+    margin-bottom: .8rem;
+}
+
+.dialog .answer {
+    font-weight: 600;
+}
+
+.subtitle {
+    margin: 2.5rem 0px 1rem;
+}
+
+.progress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stats {
+    height: 5rem;
+    width: 5rem;
+    text-align: center;
+}
+
+.calc {
+    font-size: 2rem;
+    margin-bottom: .5rem;
+}
+
+.desc {
+    color: gray;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.graph {
+    background-color: rgb(35, 35, 35);
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+}
+
+.playAgain {
+    margin-top: 3rem;
+    color: white;
+    background-color: black;
+    border: 2px solid white;
+    font-size: 1rem;
+    border-radius: .3rem;
+    padding: .6rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all .2s ease-in-out;
+}
+
+.playAgain:hover {
+    color: black;
+    background-color: white;
+}
+
+.hidden {
+    opacity: 0%;
 }

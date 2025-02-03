@@ -6,9 +6,11 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <title>Wordle</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="./fetch.js" defer></script>
     <script src="./wordle.js" defer></script>
 </head>
 <body>
+    <!-- <button onclick="openDialog()">open</button> -->
     <div class="wordle">
         <div class="table">
             <div class="word">
@@ -96,5 +98,33 @@
             </div>
         </div>
     </div>
+    <dialog>
+        <div class="dialog">
+            <h2 class="feedback">Você Acertou!</h2>
+        <p>A palavra era <span class="answer">wordle</span>!</p>
+        <h3 class="subtitle"> Progresso</h3>
+        <div class="progress">
+            <div class="stats">
+                <h4 class="calc played">100</h4>
+                <p class="desc">partidas</p>
+            </div>
+            <div class="stats">
+                <h4 class="calc victory">100</h4>
+                <p class="desc">de vitórias</p>
+            </div>
+            <div class="stats">
+                <h4 class="calc currentStreak">100</h4>
+                <p class="desc">sequência</p>
+            </div>
+            <div class="stats">
+                <h4 class="calc streak">100</h4>
+                <p class="desc">melhor sequência</p>
+            </div>
+        </div>
+        <h3 class="subtitle">Distribuição de Tentativas</h3>
+        <div class="graph">grafo em construção</div>
+        <button onclick="refresh()" class="playAgain">Jogar Novamente</button>
+        </div>
+    </dialog>
 </body>
 </html>

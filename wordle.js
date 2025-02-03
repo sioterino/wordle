@@ -1,30 +1,28 @@
-const keyboard = [...'abcdefghijklmnopqrstuvwxyz'].map(letter => ({ letter: letter, value: true }));
+let games = JSON.parse(localStorage.getItem('games')) || []
+
+let keyboard = [...'abcdefghijklmnopqrstuvwxyz'].map(letter => ({ letter: letter, value: true }));
 const wordLength = 5
 const chances = 6
 
-let wordles = []
-let answer = ''
-
-fetch('./words.json')
-.then(response => response.json())
-.then(data => {
-    wordles = data
-    let index = randint(data.length)
-    
-    if (wordles[index].value) {
-        answer = wordles[index].key
-    }    
-    console.log(answer)
-})
+let wordles = JSON.parse(localStorage.getItem('data'))
+let answer = getAnswer()
+function getAnswer() {
+    let index = randint(wordles.length)
+    while (!wordles[index].value) {
+        index = randint(wordles.length)
+    }
+    wordles[index].value = false
+    console.log(wordles[index].key)
+    return wordles[index].key
+}
 
 
 let input = document.getElementById('1')
 input.addEventListener('keyup', controller)
-
 function controller(e) {
     let key = e.key
     let id = e.target.id
-    let value = formatString(e.target.value.replace(/[^a-zA-Z]/g, ""))
+    let value = formatString(e.target.value).replace(/[^a-zA-Z]/g, "")
 
     if (value.length > wordLength) {
         e.target.value = value.substring(0, wordLength)
@@ -39,9 +37,9 @@ function controller(e) {
             input.addEventListener('keyup', controller)
             check(id, value)
         } else {
-            finish()
             input.setAttribute('disabled', true)
             check(id, value)
+            finish(false, id)
         }
     } else {
         write(id, value)
@@ -122,8 +120,8 @@ function check(id, value) {
 
     if (winner) {
         document.getElementById(id)
-        finish()
         won(id)
+        finish(true, id)
     }
 
 }
@@ -180,17 +178,16 @@ function won(id) {
             document.getElementById(keyboard[i].letter).classList.add('winner')
         }
     }
-
 }
 
-function finish() {
-    const body = document.querySelector('body')
-
-    const p = document.createElement('p')
-    p.classList.add('answer')
-    p.textContent = answer
-
-    body.append(p)
+function finish(status, id) {
+    document.querySelectorAll('.input').forEach(input => {
+        input.setAttribute('disabled', true)
+    })
+    showAnswer()
+    setLocalStorage(status, id)
+    populate(calc(), status)
+    openDialog()
 }
 
 function formatString(input) {
@@ -207,3 +204,126 @@ function formatString(input) {
 function randint(max) {
     return Math.floor(Math.random() * max)
 }
+
+function showAnswer() {
+    const body = document.querySelector('body')
+    const p = document.createElement('p')
+    p.classList.add('topAnswer')
+    p.textContent = answer
+    body.append(p)
+}
+
+function setLocalStorage(status, id) {
+    if (status) {
+        games.push(id);
+    } else {
+        games.push(0);
+    }
+    localStorage.setItem('games', JSON.stringify(games))
+    localStorage.setItem('data', JSON.stringify(wordles))
+}
+
+function calc() {
+    const plays = JSON.parse(localStorage.getItem('games'))
+
+    const played = plays.length
+    const won = plays.filter(element => element !== 0).length
+    const victory = Math.round((won / played) * 100)
+
+    let streak = 0
+    let currentStreak = 0
+
+    for (let i = 0; i < plays.length; i++) {
+        if (plays[i] !== 0) {
+            currentStreak++
+        } else {
+            streak = Math.max(streak, currentStreak)
+            currentStreak = 0
+        }
+    }
+    streak = Math.max(streak, currentStreak)
+
+    return {
+        "played": played,
+        "won": won,
+        "victory": victory,
+        "streak": streak,
+        "currentStreak": currentStreak,
+    }
+}
+
+function populate(obj, status) {
+    const dialog = document.querySelector('.dialog')
+    const played = dialog.querySelector('.played')
+    const victory = dialog.querySelector('.victory')
+    const streak = dialog.querySelector('.streak')
+    const currentStreak = dialog.querySelector('.currentStreak')
+    const span = dialog.querySelector('.answer')
+        span.style.color = 'green'
+
+    if (!status) {
+        dialog.querySelector('.feedback').textContent = 'Você Errou :('
+        span.style.color = 'red'
+    }
+
+    played.textContent = obj.played
+    victory.textContent = `${obj.victory}%`
+    streak.textContent = obj.streak
+    currentStreak.textContent = obj.currentStreak
+    span.textContent = answer
+    
+}
+
+function refresh() {
+    document.querySelector('dialog').close()
+
+    keyboard = [...'abcdefghijklmnopqrstuvwxyz'].map(letter => ({ letter: letter, value: true }))
+    answer = getAnswer()
+
+    resetDisplay()
+
+    input = document.getElementById('1')
+    input.removeAttribute('disabled')
+    input.value = ''
+    input.focus()
+    input.addEventListener('keyup', controller)
+
+}
+
+function resetDisplay() {
+    const pletters = document.querySelectorAll('.letter')
+    pletters.forEach(box => {
+        box.textContent = ''
+        box.classList.remove('green', 'yellow', 'gray', 'winner')
+    })
+
+    keyboard.forEach(key => {
+        const keyElement = document.getElementById(key.letter)
+        keyElement.classList.remove('green', 'yellow', 'gray', 'winner')
+    })
+
+    const textinputs = document.querySelectorAll('.input')
+    textinputs.forEach(input => {
+        input.value = ''
+        input.setAttribute('disabled', true)
+    })
+    textinputs[0].removeAttribute('disabled')
+
+    const topAnswer = document.querySelector('.topAnswer')
+    topAnswer.remove()
+}
+
+function openDialog() {
+    document.querySelector('dialog').showModal()
+}
+
+const dialog = document.querySelector('dialog')
+dialog.addEventListener('click', (e) => {
+    dialog.classList.toggle('hidden')
+})
+const dialogDiv = document.querySelector('.dialog')
+dialogDiv.addEventListener('click', (e) => e.stopPropagation());
+
+
+const body = document.querySelector('body')
+body.addEventListener('click', (e) => console.log(e.target));
