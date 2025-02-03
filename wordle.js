@@ -261,7 +261,9 @@ function populate(obj, status) {
     const span = dialog.querySelector('.answer')
         span.style.color = 'green'
 
-    if (!status) {
+    if (status) {
+        dialog.querySelector('.feedback').textContent = 'Você Acertou!'
+    } else {
         dialog.querySelector('.feedback').textContent = 'Você Errou :('
         span.style.color = 'red'
     }
@@ -323,7 +325,3 @@ dialog.addEventListener('click', (e) => {
 })
 const dialogDiv = document.querySelector('.dialog')
 dialogDiv.addEventListener('click', (e) => e.stopPropagation());
-
-
-const body = document.querySelector('body')
-body.addEventListener('click', (e) => console.log(e.target));
